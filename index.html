@@ -1,10 +1,24 @@
-const data = await response.json();
+async function send() {
+  const text = input.value;
+  if (!text) return;
 
-// extract ONLY the AI text
-const text = data.choices[0].message.content;
+  addMsg(text, "user");
+  input.value = "";
 
-// remove code blocks
-const cleanText = text.replace(/```/g, "");
+  const typing = showTyping();
 
-// show in chat
-addMsg(cleanText, "bot");
+  const response = await fetch("YOUR_API_URL", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: text })
+  });
+
+  const data = await response.json();
+
+  const reply = data.choices[0].message.content.replace(/```/g, "");
+
+  typing.remove();
+  addMsg(reply, "bot");
+}
